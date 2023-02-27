@@ -276,7 +276,7 @@ const AllRoutes = () => {
                     path: 'dashboard',
                     children: [
                         {
-                            path: 'instant-booking',
+                            path: 'door-to-door-booking',
                             element: <LoadComponent component={InstantBookingDashboard} />,
                         },
                     ],

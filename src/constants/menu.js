@@ -50,11 +50,11 @@ const MENU_ITEMS = [
         url: '/dashboard/lcl',
     },
     {
-        key: 'ds-instant-booking',
-        label: 'Instant Booking',
+        key: 'ds-door-to-door-booking',
+        label: 'Door to Door Booking',
         isTitle: false,
         icon: 'uil-location-point',
-        url: '/dashboard/instant-booking',
+        url: '/dashboard/door-to-door-booking',
     },
     // {
     //     key: 'apps-calendar',
