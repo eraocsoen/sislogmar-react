@@ -6,7 +6,7 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
-
+import { Divider, Steps } from 'antd';
 // actions
 import { resetAuth, loginUser } from '../../redux/actions';
 
@@ -35,6 +35,12 @@ const Tracer = (): React$Element<React$FragmentType> => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [ isContainer, setIsContainer ] = useState(false)
+    const [ isShowStepper, setIsShowStepper ] = useState(false)
+    const [ isNotFound, setIsNotFound ] = useState(false)
+    const [ nomorKapal, setNomorKapal ] = useState("")
+    const [ nomorKontainer, setNomorKontainer ] = useState("")
+    const [ isDisabled, setIsDisabled ] = useState(true)
+    const [ isRequired, setIsRequired ] = useState(false)
 
     const location = useLocation();
     const redirectUrl = location.state && location.state.from ? location.state.from.pathname : '/';
@@ -55,17 +61,34 @@ const Tracer = (): React$Element<React$FragmentType> => {
      */
     const schemaResolver = yupResolver(
         yup.object().shape({
-            username: yup.string().required(t('Please enter Username')),
-            password: yup.string().required(t('Please enter Password')),
+            nomer_kapal: yup.string().required(t('Please enter Username')),
+            nomer_kontainer: yup.string().required(t('Please enter Password')),
         })
     );
 
     /*
      * handle form submission
      */
-    const onSubmit = (formData) => {
-        dispatch(loginUser(formData['username'], formData['password']));
-    };
+
+    const handleSubmit = () => {
+        if ( nomorKapal !== "" || nomorKontainer !== "") {
+            if (nomorKapal.toUpperCase() === 'KP7777777' || nomorKontainer.toUpperCase() === 'KT8888888') {
+                setIsShowStepper(true)
+            } else {
+                setIsNotFound(true)
+            }
+        } else {
+            setIsRequired(true)
+        }
+     
+    }
+
+    useEffect(() => {
+        if (nomorKapal|| nomorKontainer) {
+            setIsRequired(false)
+            setIsNotFound(false)
+        }
+    }, [nomorKapal, nomorKontainer])
 
     return (
         <>
@@ -73,7 +96,7 @@ const Tracer = (): React$Element<React$FragmentType> => {
 
             <AccountLayout bottomLinks={<BottomLink />}>
                 <h4 className="mt-0">Tracking</h4>
-                <p className="text-muted mb-4">Masukan nomor untuk mengetahui posisi kapal atau kontainer</p>
+                <p className="text-muted mb-2">Masukan nomor untuk mengetahui posisi kapal atau kontainer</p>
 
                 {error && (
                     <Alert variant="danger" className="my-2">
@@ -82,11 +105,12 @@ const Tracer = (): React$Element<React$FragmentType> => {
                 )}
 
                 <VerticalForm
-                    onSubmit={onSubmit}
                     resolver={schemaResolver}
-                    defaultValues={{ username: 'test', password: 'test' }}>
+                    defaultValues={{ nomorKapal: '', nomorKontainer: '' }}>
                     {!isContainer && (
                         <FormInput
+                            value={nomorKapal}
+                            onChange={({ target }) => setNomorKapal(target.value)}
                             label="Nomor Kapal"
                             type="text"
                             name="nomor_kapal"
@@ -96,6 +120,8 @@ const Tracer = (): React$Element<React$FragmentType> => {
                     )}
                     {isContainer && (
                         <FormInput
+                            value={nomorKontainer}
+                            onChange={({ target }) => setNomorKontainer(target.value)}
                             label="Nomor Kontainer"
                             type="text"
                             name="nomor_kontainer"
@@ -103,8 +129,15 @@ const Tracer = (): React$Element<React$FragmentType> => {
                             containerClass={'mb-2'}
                         />
                     )}
+                    {isRequired && (
+                        <>
+                            <p style={{ color: 'red', fontSize: '10px'}}>
+                                Pastikan nomor kapal/ kontainer terisi *
+                            </p>
+                        </>
+                    )}
                     {!isContainer && (
-                        <Button onClick={() => setIsContainer(true)} variant={'outline-info'} className="mb-4 px-1" style={{ border: 'none', padding: '2px'}}>
+                        <Button onClick={() => setIsContainer(true)} variant={'outline-info'} className="mb-4" style={{ border: 'none', padding: '2px'}}>
                             Lacak berdasarkan Kontainer
                         </Button>
                     )}
@@ -115,16 +148,18 @@ const Tracer = (): React$Element<React$FragmentType> => {
                     )}
                    
                     <div className="d-grid mb-0 text-center">
-                        <Button variant="primary" type="submit" disabled={loading}>
+                        <Button variant="primary" onClick={handleSubmit}>
                             {/* <i className="mdi mdi-login"></i> */}
                              Lacak
                         </Button>
                     </div>
-                    <div className="d-flex mb-0 justify-content-end mt-2">
+                    <div className="d-flex mb-0 justify-content-end mt-2 ">
                         <Link to={'/account/login'} className="text-info ms-1 text-decoration-underline">
                             <b>Masuk</b>
                         </Link>
                     </div>
+                    
+                    
                    
                     {/* social links */}
                     {/* <div className="text-center mt-4">
@@ -153,6 +188,38 @@ const Tracer = (): React$Element<React$FragmentType> => {
                         </ul>
                     </div> */}
                 </VerticalForm>
+                {isShowStepper && (
+                    <div style={{ height: '50%' }}>
+                        <Steps
+                            progressDot
+                            current={0}
+                            direction="vertical"
+                            items={[
+                                {
+                                title: 'Muat Barang',
+                                description: 'Pelabuhan Kalimas, Surabaya, Jawa Timur.',
+                                },
+                                {
+                                title: 'Transit',
+                                description: 'Pelabuhan Kamal, Madura, Jawa Timur.',
+                                },
+                                {
+                                title: 'Bongkar Muatan',
+                                description: 'Pelabuhan Ketapang, Banyuwangi, Jawa Timur.',
+                                },
+                            ]}
+                        />
+                    </div>
+                )}
+
+                {isNotFound && (
+                    <>
+                        <div className='d-flex justify-content-center mt-4'>
+                            <h4 className="mt-0">Data tidak ditemukan</h4>
+                        </div>
+                    </>
+                )}
+                
             </AccountLayout>
         </>
     );

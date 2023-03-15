@@ -29,7 +29,7 @@ const AccountLayout = ({ bottomLinks, children }: AccountLayoutProps): React$Ele
             <div className="auth-fluid">
                 {/* Auth fluid left content */}
                 <div className="auth-fluid-form-box">
-                    <div className="align-items-center d-flex h-75">
+                    <div className="align-items-center d-flex h-100">
                         <Card.Body>
                             {/* logo */}
                             <div className="auth-brand text-center text-lg-start">
