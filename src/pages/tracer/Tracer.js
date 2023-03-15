@@ -87,6 +87,7 @@ const Tracer = (): React$Element<React$FragmentType> => {
         if (nomorKapal|| nomorKontainer) {
             setIsRequired(false)
             setIsNotFound(false)
+            setIsShowStepper(false)
         }
     }, [nomorKapal, nomorKontainer])
 
